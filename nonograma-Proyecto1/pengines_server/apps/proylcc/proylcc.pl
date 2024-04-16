@@ -23,7 +23,7 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
 
-put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
+put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):-
 	% NewGrid is the result of replacing the row Row in position RowN of Grid by a new row NewRow (not yet instantiated).
 	replace(Row, RowN, NewRow, Grid, NewGrid),
 
@@ -34,4 +34,67 @@ put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
 	(replace(Cell, ColN, _, Row, NewRow),
 	Cell == Content
 		;
-	replace(_Cell, ColN, Content, Row, NewRow)).
+	replace(_Cell, ColN, Content, Row, NewRow)),
+	
+	nth0(RowN, RowsClues, ActualRowClues),
+	satisfiedLine(ActualRowClues,NewRow,RowSat),
+
+	nth0(ColN,NewGrid,Col),
+	nth0(ColN, ColsClues, ActualColClues),
+	satisfiedLine(ActualColClues,Col,ColSat).
+    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	% 1 = TRUE, 0 = FALSE
+%La cantidad de celdas que faltan pintar es mayor a lo que queda por recorrer de la lista
+satisfiedClue(N,Line,0,_):-
+    length(Line, Length),
+    N > Length.
+
+%Se encontraron exactamente N celdas pintadas consecutivas
+satisfiedClue(N,Line,1,RestOfLine):-
+    nConsecutive(N,Line,RestOfLine).
+
+%Estoy en una celda vacia    
+satisfiedClue(N,[H|T],IsSatisfied,RestOfLine):-
+    H \= '#',
+    satisfiedClue(N,T,IsSatisfied,RestOfLine).
+
+%No encontre exactamente N celdas consecutivas pintadas, me muevo a la celda vacia mas cercana
+satisfiedClue(N,['#'|T],IsSatisfied,RestOfLine):-
+    not(nConsecutive(N,['#'|T],_)),
+    moveToNextEmpty(T,Tm),
+    satisfiedClue(N,Tm,IsSatisfied,RestOfLine).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%CB: No se necesitan pintar mas celdas.
+%nConsecutive(Number,ActualList,RestOfList).
+nConsecutive(0,[],[]).
+nConsecutive(0,[H|T],[H|T]):- H \= '#'.
+%CR 
+nConsecutive(N,['#'|T],Ts):-
+    Nr is N -1,
+    nConsecutive(Nr,T,Ts). 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%CB: no estoy en un '#'
+moveToNextEmpty([],[]).
+moveToNextEmpty([H|T],[H|T]):- H \= '#'.
+%CR
+moveToNextEmpty(['#'|T],Ts):- moveToNextEmpty(T,Ts).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%CB: 1 sola pista
+satisfiedLine([C],Line,IsSatisfied):- satisfiedClue(C,Line,IsSatisfied,_).
+
+%CR: mas de 1 pista
+satisfiedLine([HC|Clues],Line,IsSatisfied):-
+    satisfiedClue(HC,Line,IsSatisfied,RestOfLine),
+    satisfiedLine(Clues,RestOfLine,IsSatisfied).
+
+satisfiedLine(_,_,0).
+
