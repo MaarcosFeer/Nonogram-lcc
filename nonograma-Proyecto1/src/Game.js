@@ -44,13 +44,17 @@ function Game() {
     const content =  onPaintingMode ? 'X' : '#';
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
-    const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",,,,],["X",,"X",,],["X",,,,],["#","#","#",,],[,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+    const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
         /*funcionalidad que chequee si todos los elementos de la fila y/o columna estan pintados*/
-        /*updateClues()? */
+        /*updateClues(RowSat,ColSat,i,j)? */
+        if(response['RowSat'] === 1)
+          console.log("Fila satisfecha.");
+        else
+        console.log("INSATISFECHA.");
       }
       setWaiting(false);
     });

@@ -37,12 +37,23 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 	replace(_Cell, ColN, Content, Row, NewRow)),
 	
 	nth0(RowN, RowsClues, ActualRowClues),
-	satisfiedLine(ActualRowClues,NewRow,RowSat),
+	satisfiedLine(ActualRowClues,NewRow,RowSat).
 
 	nth0(ColN,NewGrid,Col),
 	nth0(ColN, ColsClues, ActualColClues),
-	satisfiedLine(ActualColClues,Col,ColSat).
+	satisfiedLine(ActualColClues,Col,ColSat). 
     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%CB: 1 sola pista
+satisfiedLine([C|[]],Line,IsSatisfied):- satisfiedClue(C,Line,IsSatisfied,_).
+
+%CR: mas de 1 pista
+satisfiedLine([HC|Clues],Line,IsSatisfied):-
+    satisfiedClue(HC,Line,IsSatisfied,RestOfLine),
+    satisfiedLine(Clues,RestOfLine,IsSatisfied).
+
+satisfiedLine(_,_,0).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -58,12 +69,13 @@ satisfiedClue(N,Line,1,RestOfLine):-
 
 %Estoy en una celda vacia    
 satisfiedClue(N,[H|T],IsSatisfied,RestOfLine):-
-    H \= '#',
+    H \== "#",
     satisfiedClue(N,T,IsSatisfied,RestOfLine).
 
 %No encontre exactamente N celdas consecutivas pintadas, me muevo a la celda vacia mas cercana
-satisfiedClue(N,['#'|T],IsSatisfied,RestOfLine):-
-    not(nConsecutive(N,['#'|T],_)),
+satisfiedClue(N,[H|T],IsSatisfied,RestOfLine):-
+	H == "#",
+    not(nConsecutive(N,[H|T],_)),
     moveToNextEmpty(T,Tm),
     satisfiedClue(N,Tm,IsSatisfied,RestOfLine).
 
@@ -72,9 +84,10 @@ satisfiedClue(N,['#'|T],IsSatisfied,RestOfLine):-
 %CB: No se necesitan pintar mas celdas.
 %nConsecutive(Number,ActualList,RestOfList).
 nConsecutive(0,[],[]).
-nConsecutive(0,[H|T],[H|T]):- H \= '#'.
+nConsecutive(0,[H|T],[H|T]):- H \== "#".
 %CR 
-nConsecutive(N,['#'|T],Ts):-
+nConsecutive(N,[H|T],Ts):-
+	H == "#",
     Nr is N -1,
     nConsecutive(Nr,T,Ts). 
 
@@ -82,19 +95,10 @@ nConsecutive(N,['#'|T],Ts):-
 
 %CB: no estoy en un '#'
 moveToNextEmpty([],[]).
-moveToNextEmpty([H|T],[H|T]):- H \= '#'.
+moveToNextEmpty([H|T],[H|T]):- H \== "#".
 %CR
-moveToNextEmpty(['#'|T],Ts):- moveToNextEmpty(T,Ts).
+moveToNextEmpty([H|T],Ts):- 
+	H == "#",
+	moveToNextEmpty(T,Ts).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%CB: 1 sola pista
-satisfiedLine([C],Line,IsSatisfied):- satisfiedClue(C,Line,IsSatisfied,_).
-
-%CR: mas de 1 pista
-satisfiedLine([HC|Clues],Line,IsSatisfied):-
-    satisfiedClue(HC,Line,IsSatisfied,RestOfLine),
-    satisfiedLine(Clues,RestOfLine,IsSatisfied).
-
-satisfiedLine(_,_,0).
-
