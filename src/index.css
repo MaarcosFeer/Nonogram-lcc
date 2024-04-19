@@ -3,6 +3,7 @@
 }
 
 body {
+  background: #99582A;
   font-family: sans-serif;
   margin: 20px;
   padding: 0;
@@ -21,8 +22,12 @@ body {
 
 .board {
   display: grid;
+  outline: darkgoldenrod solid 2px;
+  box-shadow: 2px 2px 5px #CCC;
 }
-
+.squareSelect{
+  background: #000;
+}
 .horizontal {
   display: flex;
 }
@@ -44,7 +49,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #b9d6e0;
+  background: #FFE6A7;
   border-radius: 8px;
   margin: 5px;
 }
@@ -58,8 +63,9 @@ body {
 }
 
 .toggleButton {
-  position:relative;
-  display: inline-block;
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
   width: 80px;
   height: 34px;
 }
@@ -76,13 +82,12 @@ height: 0;
 
   
 
-  top: 0 ;
+  top:  0;
   left: 0;
   right: 0;
   bottom: 0;
-
   border-radius: 10px 10px;
-  background-color: #b9d6e0;
+  background-color: #FFE6A7;
 }
 
 .slider:before {
@@ -90,14 +95,14 @@ height: 0;
   content: "\2716";
   height: 35px;
   width: 35px;
-  background-color: aliceblue;
+  background-color: #99582A;
   border-radius: 100% 100%;
   text-align: center; /* Centramos horizontalmente */
   line-height:225% /* Centramos verticalmente */
 }
 
 .slider:hover {
-  background-color: #09f;
+  background-color: #FFF3D6;
   transition: .3s ease background-color;
 }
 
@@ -107,8 +112,14 @@ input:checked + .slider:before {
 }
 
 .game {
+  width: 100vw;
+  height: 100vh;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  gap: 20px
 }
 
 .game-info {

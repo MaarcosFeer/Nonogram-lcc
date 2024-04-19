@@ -1,9 +1,8 @@
 import React from 'react';
 import Square from './Square';
 import Clue from './Clue';
-import ToggleButton from './ToggleButton';
 
-function Board({ grid, rowsClues, colsClues, onClick,onClickToggleButton }) {
+function Board({ grid, rowsClues, colsClues, onClick}) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
     return (
@@ -54,8 +53,7 @@ function Board({ grid, rowsClues, colsClues, onClick,onClickToggleButton }) {
                             />
                         )
                     )}
-                </div>
-                <ToggleButton onClickToggleButton={() => onClickToggleButton()}/>  
+                </div>  
             </div>
             
         </div>

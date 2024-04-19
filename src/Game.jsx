@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
-
+import ToggleButton from './ToggleButton';
 let pengine;
 
 function Game() {
@@ -67,18 +67,18 @@ function Game() {
  
   const statusText = 'N cuadrados restantes';
   return (
+    
     <div className="game">
+      <div className="game-info">
+        {statusText}
+      </div>
       <Board
         grid={grid}
         rowsClues={rowsClues}
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
-        onClickToggleButton={() => handleClickToggleButton()}
       />
-      
-      <div className="game-info">
-        {statusText}
-      </div>
+      <ToggleButton onClickToggleButton={()=> handleClickToggleButton()}/>
     </div>
   );
 }

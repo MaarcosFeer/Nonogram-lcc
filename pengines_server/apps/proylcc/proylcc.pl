@@ -4,7 +4,7 @@
 	]).
 
 :-use_module(library(lists)).
-
+:-use_module(library(clpfd)).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % replace(?X, +XIndex, +Y, +Xs, -XsY)
