@@ -54,7 +54,12 @@ function Game() {
         if(response['RowSat'] === 1)
           console.log("Fila satisfecha.");
         else
-        console.log("INSATISFECHA.");
+        console.log("FILA INSATISFECHA.");
+
+        if(response['ColSat'] === 1)
+          console.log("Columna satisfecha.");
+        else
+        console.log("COL INSATISFECHA.");
       }
       setWaiting(false);
     });
