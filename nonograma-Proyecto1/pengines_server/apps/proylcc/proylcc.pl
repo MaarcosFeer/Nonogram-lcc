@@ -39,9 +39,9 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 	nth0(RowN, RowsClues, ActualRowClues),
 	satisfiedLine(ActualRowClues,NewRow,RowSat).
 
-	nth0(ColN,NewGrid,Col),
-	nth0(ColN, ColsClues, ActualColClues),
-	satisfiedLine(ActualColClues,Col,ColSat). 
+	%nth0(ColN,NewGrid,Col),
+	%nth0(ColN, ColsClues, ActualColClues),
+	%satisfiedLine(ActualColClues,Col,ColSat). 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
