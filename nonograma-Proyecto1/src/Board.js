@@ -3,7 +3,7 @@ import Square from './Square';
 import Clue from './Clue';
 import ToggleButton from './ToggleButton';
 
-function Board({ grid, rowsClues, colsClues, onClick,onClickToggleButton }) {
+function Board({ grid, rowsClues, colsClues, onClick, onClickToggleButton, satisfiedRowClues, satisfiedColClues}) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
     return (

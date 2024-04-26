@@ -39,13 +39,15 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 		;
 	replace(_Cell, ColN, Content, Row, NewRow)),
 	
+	%Chequeo si se cumplen las pistas de la fila actual
 	nth0(RowN, RowsClues, ActualRowClues),
-	satisfiedLine(ActualRowClues,NewRow,RowSat).
+	satisfiedLine(ActualRowClues,NewRow,RowSat),
 
-	transpose(NewGrid,Transpose).
-	%nth0(ColN,NewGrid,Col),
-	%nth0(ColN, ColsClues, ActualColClues),
-	%satisfiedLine(ActualColClues,Col,ColSat). 
+	%Chequeo si se cumplen las pistas de la columna actual
+	transpose(NewGrid,TransposeNewGrid),
+	nth0(ColN,TransposeNewGrid,Col),
+	nth0(ColN, ColsClues, ActualColClues),
+	satisfiedLine(ActualColClues,Col,ColSat). 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -106,3 +108,9 @@ moveToNextEmpty([H|T],Ts):-
 	moveToNextEmpty(T,Ts).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+checkWin([],[],true).
+checkWin(SatisfiedRawClues,SatisfiedColClues,true):- 
+	forall(member(RawClue,SatisfiedRawClues), 1 is RawClue),
+	forall(member(ColClue,SatisfiedColClues), 1 is ColClue).
+checkWin(_,_,false).

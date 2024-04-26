@@ -11,6 +11,8 @@ function Game() {
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
+  const [satisfiedRowClues, setSatisfiedRowClues] = useState(null); 
+  const [satisfiedColClues, setSatisfiedColClues] = useState(null); 
   /*elevo el estado que controla el toggleButton para saber 
    cuando colocar cruces y cuando pintar */
    const [onPaintingMode, setOnPaintingMode] = useState(true);
@@ -30,6 +32,8 @@ function Game() {
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
+        setSatisfiedRowClues(Array(response['RowClues'].length).fill(0));
+        setSatisfiedColClues(Array(response['ColumClues'].length).fill(0));
       }
     });
   }
@@ -41,7 +45,7 @@ function Game() {
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
-    const content =  onPaintingMode ? 'X' : '#';
+    const content =  onPaintingMode ?  'X' : '#';
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
     const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
@@ -49,17 +53,16 @@ function Game() {
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
-        /*funcionalidad que chequee si todos los elementos de la fila y/o columna estan pintados*/
-        /*updateClues(RowSat,ColSat,i,j)? */
-        if(response['RowSat'] === 1)
-          console.log("Fila satisfecha.");
-        else
-        console.log("FILA INSATISFECHA.");
+        satisfiedRowClues[i] = response['RowSat']; 
+        satisfiedColClues[j] = response['ColSat']; 
 
-        if(response['ColSat'] === 1)
-          console.log("Columna satisfecha.");
-        else
-        console.log("COL INSATISFECHA.");
+        const satisfiedRowCluesS = JSON.stringify(satisfiedRowClues);
+        const satisfiedColCluesS = JSON.stringify(satisfiedColClues);
+        const queryWinS = `checkWin("${satisfiedRowCluesS}",${satisfiedColCluesS},IsAWin)`;
+        pengine.query(queryWinS,(success,response) => {
+          if(success)
+              console.log(response['IsAWin']);
+        })
       }
       setWaiting(false);
     });
@@ -76,7 +79,7 @@ function Game() {
     return null;
   }
  
-  const statusText = 'N cuadrados restantes';
+  const statusText = "Keep playing!";
   return (
     <div className="game">
       <Board
@@ -85,6 +88,8 @@ function Game() {
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
         onClickToggleButton={() => handleClickToggleButton()}
+        satisfiedRowClues={satisfiedRowClues}
+        satisfiedColClues={satisfiedColClues}
       />
       
       <div className="game-info">
