@@ -110,7 +110,24 @@ moveToNextEmpty([H|T],Ts):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 checkWin([],[],true).
-checkWin(SatisfiedRawClues,SatisfiedColClues,true):- 
-	forall(member(RawClue,SatisfiedRawClues), 1 is RawClue),
+checkWin(SatisfiedRowClues,SatisfiedColClues,true):- 
+	forall(member(RowClue,SatisfiedRowClues), 1 is RowClue),
 	forall(member(ColClue,SatisfiedColClues), 1 is ColClue).
 checkWin(_,_,false).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+initClues(Grid,RowsClues, ColsClues,NewSatisfiedRowClues,NewSatisfiedColClues):-
+	initCluesAux(Grid,RowsClues,NewSatisfiedRowClues),
+	transpose(Grid,TransposeGrid),
+	initCluesAux(TransposeGrid,ColsClues,NewSatisfiedColClues). 
+
+initCluesAux([],_,[]).
+%CB 1 sola linea por recorrer
+initCluesAux([Line|[]],[ActualLineClues|[]],[IsSatisfied]):-
+	satisfiedLine(ActualLineClues,Line,IsSatisfied).
+
+initCluesAux([Line|RestOfLine],[ActualLineClues|RestOfClues],[IsSatisfied|RestOfSatisfied]):-
+	satisfiedLine(ActualLineClues,Line,IsSatisfied),
+	initCluesAux(RestOfLine,RestOfClues,RestOfSatisfied).
+

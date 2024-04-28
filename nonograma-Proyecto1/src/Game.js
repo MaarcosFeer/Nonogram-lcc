@@ -16,6 +16,7 @@ function Game() {
   /*elevo el estado que controla el toggleButton para saber 
    cuando colocar cruces y cuando pintar */
    const [onPaintingMode, setOnPaintingMode] = useState(true);
+   const [gameStatus, setGameStatus] = useState(null);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -28,15 +29,44 @@ function Game() {
     pengine = instance;
     const queryS = 'init(RowClues, ColumClues, Grid)';
     pengine.query(queryS, (success, response) => {
-      if (success) {
+      if (success) { 
         setGrid(response['Grid']);
         setRowsClues(response['RowClues']);
         setColsClues(response['ColumClues']);
         setSatisfiedRowClues(Array(response['RowClues'].length).fill(0));
         setSatisfiedColClues(Array(response['ColumClues'].length).fill(0));
-      }
-    });
-  }
+        setGameStatus(true);
+      } 
+  });
+}
+
+  useEffect(() => {
+    if(satisfiedColClues && satisfiedRowClues){
+      const satisfiedRowCluesS = JSON.stringify(satisfiedRowClues);
+      const satisfiedColCluesS = JSON.stringify(satisfiedColClues);
+      const queryWinS = `checkWin("${satisfiedRowCluesS}",${satisfiedColCluesS},IsAWin)`;
+      pengine.query(queryWinS,(success,response) => {
+        if(success)
+            console.log(response['IsAWin']);
+      })
+    }
+  }, [satisfiedColClues,satisfiedRowClues]);
+  //Solucionar warning
+  /* useEffect(() => {
+     if(grid && rowsClues && colsClues){
+       const rowsCluesS = JSON.stringify(rowsClues);
+       const colsCluesS = JSON.stringify(colsClues);
+       const gridS = JSON.stringify(grid);
+       const queryI = `initClues("${gridS}",${rowsCluesS},${colsCluesS},NewSatisfiedRowClues,NewSatisfiedColClues)`;
+       pengine.query(queryI,(success,response) => {
+        if(success){
+          console.log(response['NewSatisfiedRowClues']);
+          console.log(response['NewSatisfiedColClues']);
+        }
+      })
+
+    } 
+  }, [grid,rowsClues,colsClues]); */
   
   function handleClick(i, j) {
     // No action on click if we are waiting.
@@ -55,17 +85,21 @@ function Game() {
         setGrid(response['ResGrid']);
         satisfiedRowClues[i] = response['RowSat']; 
         satisfiedColClues[j] = response['ColSat']; 
+        checkWinStatus();
+        
+      }
+      setWaiting(false);
+    });
+  }
 
-        const satisfiedRowCluesS = JSON.stringify(satisfiedRowClues);
+  function checkWinStatus(){
+    const satisfiedRowCluesS = JSON.stringify(satisfiedRowClues);
         const satisfiedColCluesS = JSON.stringify(satisfiedColClues);
         const queryWinS = `checkWin("${satisfiedRowCluesS}",${satisfiedColCluesS},IsAWin)`;
         pengine.query(queryWinS,(success,response) => {
           if(success)
               console.log(response['IsAWin']);
         })
-      }
-      setWaiting(false);
-    });
   }
 
   function handleClickToggleButton(){
