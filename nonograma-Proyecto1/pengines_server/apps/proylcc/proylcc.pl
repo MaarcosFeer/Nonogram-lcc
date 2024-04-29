@@ -51,8 +51,11 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%CB: 1 sola pista
-satisfiedLine([C|[]],Line,IsSatisfied):- satisfiedClue(C,Line,IsSatisfied,_).
+%CB: 1 sola pista, me fijo que le resto de la línea esté sin pintar
+satisfiedLine([C|[]],Line,IsSatisfied):- 
+	satisfiedClue(C,Line,IsSatisfied,RestOfLine),
+	cleanLine(RestOfLine,IsClean),
+	IsSatisfied == IsClean.
 
 %CR: mas de 1 pista
 satisfiedLine([HC|Clues],Line,IsSatisfied):-
@@ -62,28 +65,31 @@ satisfiedLine([HC|Clues],Line,IsSatisfied):-
 satisfiedLine(_,_,0).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%IsSatisfied: 1 = TRUE, 0 = FALSE
+%CASOS CON PISTA 0
+%Hay alguna celda pintada y la pista es 0, devuelvo 0.
+satisfiedClue(0,[H|T],0,[H|T]):- H == "#".
+%Llegué a la última celda y no está pintada, y la pista es 0, devuelvo 1.
+satisfiedClue(0,[H|[]],1,[]):- H \== "#".
+%La pista es 0, la celda actual no está pintada, sigo recorriendo.
+satisfiedClue(0,[H|T],IsSatisfied,Ts):-
+	H \== "#",
+	satisfiedClue(0,T,IsSatisfied,Ts).
 
-	% 1 = TRUE, 0 = FALSE
+%CASOS CON PISTA N > 0
 %La cantidad de celdas que faltan pintar es mayor a lo que queda por recorrer de la lista
-satisfiedClue(N,Line,0,_):-
+satisfiedClue(N,Line,0,Line):-
     length(Line, Length),
     N > Length.
+
+%Estoy en una celda sin pintar, sigo recorriendo    
+satisfiedClue(N,[H|T],IsSatisfied,RestOfLine):-
+	H \== "#",
+	satisfiedClue(N,T,IsSatisfied,RestOfLine).
 
 %Se encontraron exactamente N celdas pintadas consecutivas
 satisfiedClue(N,Line,1,RestOfLine):-
     nConsecutive(N,Line,RestOfLine).
-
-%Estoy en una celda vacia    
-satisfiedClue(N,[H|T],IsSatisfied,RestOfLine):-
-    H \== "#",
-    satisfiedClue(N,T,IsSatisfied,RestOfLine).
-
-%No encontre exactamente N celdas consecutivas pintadas, me muevo a la celda vacia mas cercana
-satisfiedClue(N,[H|T],IsSatisfied,RestOfLine):-
-	H == "#",
-    not(nConsecutive(N,[H|T],_)),
-    moveToNextEmpty(T,Tm),
-    satisfiedClue(N,Tm,IsSatisfied,RestOfLine).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -96,20 +102,18 @@ nConsecutive(N,[H|T],Ts):-
 	H == "#",
     Nr is N -1,
     nConsecutive(Nr,T,Ts). 
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Devuelve 1 la línea está limpia (no tiene ninguna celda pintada), de lo contrario devuelve 0
+cleanLine([],1).
+cleanLine([H|_],0):- H == "#".
+cleanLine([H|T],IsClean):-
+	H \== "#",
+	cleanLine(T,IsClean).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%CB: no estoy en un '#'
-moveToNextEmpty([],[]).
-moveToNextEmpty([H|T],[H|T]):- H \== "#".
-%CR
-moveToNextEmpty([H|T],Ts):- 
-	H == "#",
-	moveToNextEmpty(T,Ts).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-checkWin([],[],true).
+	
+	checkWin([],[],true).
 checkWin(SatisfiedRowClues,SatisfiedColClues,true):- 
 	forall(member(RowClue,SatisfiedRowClues), 1 is RowClue),
 	forall(member(ColClue,SatisfiedColClues), 1 is ColClue).
@@ -121,8 +125,8 @@ initClues(Grid,RowsClues, ColsClues,NewSatisfiedRowClues,NewSatisfiedColClues):-
 	initCluesAux(Grid,RowsClues,NewSatisfiedRowClues),
 	transpose(Grid,TransposeGrid),
 	initCluesAux(TransposeGrid,ColsClues,NewSatisfiedColClues). 
-
-initCluesAux([],_,[]).
+	
+	initCluesAux([],_,[]).
 %CB 1 sola linea por recorrer
 initCluesAux([Line|[]],[ActualLineClues|[]],[IsSatisfied]):-
 	satisfiedLine(ActualLineClues,Line,IsSatisfied).
@@ -131,3 +135,20 @@ initCluesAux([Line|RestOfLine],[ActualLineClues|RestOfClues],[IsSatisfied|RestOf
 	satisfiedLine(ActualLineClues,Line,IsSatisfied),
 	initCluesAux(RestOfLine,RestOfClues,RestOfSatisfied).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%DEADCODE 
+
+%No encontre exactamente N celdas consecutivas pintadas, me muevo a la celda vacia mas cercana
+/* satisfiedClue(N,[H|T],IsSatisfied,RestOfLine):-
+	H == "#",
+	not(nConsecutive(N,[H|T],_)),
+	moveToNextEmpty(T,Tm),
+	satisfiedClue(N,Tm,IsSatisfied,RestOfLine). */
+
+	%CB: no estoy en un '#'
+	/* moveToNextEmpty([],[]).
+	moveToNextEmpty([H|T],[H|T]):- H \== "#".
+	%CR
+	moveToNextEmpty([H|T],Ts):- 
+	H == "#",
+	moveToNextEmpty(T,Ts). */

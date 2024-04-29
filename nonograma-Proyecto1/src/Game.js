@@ -13,10 +13,9 @@ function Game() {
   const [waiting, setWaiting] = useState(false);
   const [satisfiedRowClues, setSatisfiedRowClues] = useState(null); 
   const [satisfiedColClues, setSatisfiedColClues] = useState(null); 
-  /*elevo el estado que controla el toggleButton para saber 
-   cuando colocar cruces y cuando pintar */
-   const [onPaintingMode, setOnPaintingMode] = useState(true);
-   const [gameStatus, setGameStatus] = useState(null);
+  /*elevo el estado que controla el toggleButton para saber cuando colocar cruces y cuando pintar */
+  const [onPaintingMode, setOnPaintingMode] = useState(true);
+  const [gameStatus, setGameStatus] = useState(null);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -51,22 +50,26 @@ function Game() {
       })
     }
   }, [satisfiedColClues,satisfiedRowClues]);
-  //Solucionar warning
-  /* useEffect(() => {
-     if(grid && rowsClues && colsClues){
-       const rowsCluesS = JSON.stringify(rowsClues);
-       const colsCluesS = JSON.stringify(colsClues);
-       const gridS = JSON.stringify(grid);
-       const queryI = `initClues("${gridS}",${rowsCluesS},${colsCluesS},NewSatisfiedRowClues,NewSatisfiedColClues)`;
-       pengine.query(queryI,(success,response) => {
-        if(success){
-          console.log(response['NewSatisfiedRowClues']);
-          console.log(response['NewSatisfiedColClues']);
-        }
-      })
 
-    } 
-  }, [grid,rowsClues,colsClues]); */
+  //Solucionar warning
+     useEffect(() => {
+     
+  }, [gameStatus]); 
+
+  function initClues(){
+    if(gameStatus){
+      const rowsCluesS = JSON.stringify(rowsClues);
+      const colsCluesS = JSON.stringify(colsClues);
+      const gridS = JSON.stringify(grid);
+      const queryI = `initClues(${gridS},${rowsCluesS},${colsCluesS},NewSatisfiedRowClues,NewSatisfiedColClues)`;
+       pengine.query(queryI,(success,response) => {
+       if(success){
+         console.log(response['NewSatisfiedRowClues']);
+         console.log(response['NewSatisfiedColClues']);
+       }
+     }) 
+   } 
+  } 
   
   function handleClick(i, j) {
     // No action on click if we are waiting.
@@ -83,23 +86,19 @@ function Game() {
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
-        satisfiedRowClues[i] = response['RowSat']; 
-        satisfiedColClues[j] = response['ColSat']; 
-        checkWinStatus();
-        
+        updateSatisfiedClues(i,j,response['RowSat'],response['ColSat']);
       }
       setWaiting(false);
     });
   }
 
-  function checkWinStatus(){
-    const satisfiedRowCluesS = JSON.stringify(satisfiedRowClues);
-        const satisfiedColCluesS = JSON.stringify(satisfiedColClues);
-        const queryWinS = `checkWin("${satisfiedRowCluesS}",${satisfiedColCluesS},IsAWin)`;
-        pengine.query(queryWinS,(success,response) => {
-          if(success)
-              console.log(response['IsAWin']);
-        })
+  function updateSatisfiedClues(i,j,rowSat,colSat){
+    const newSatisfiedRowClues = [...satisfiedRowClues];
+    const newSatisfiedColClues = [...satisfiedColClues];
+    newSatisfiedRowClues[i] = rowSat; 
+    newSatisfiedColClues[j] = colSat;
+    setSatisfiedRowClues(newSatisfiedRowClues);
+    setSatisfiedColClues(newSatisfiedColClues);
   }
 
   function handleClickToggleButton(){
