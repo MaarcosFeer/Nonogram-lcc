@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
 
@@ -51,25 +51,23 @@ function Game() {
     }
   }, [satisfiedColClues,satisfiedRowClues]);
 
-  //Solucionar warning
+   //Solucionar warning
      useEffect(() => {
-     
-  }, [gameStatus]); 
-
-  function initClues(){
-    if(gameStatus){
-      const rowsCluesS = JSON.stringify(rowsClues);
-      const colsCluesS = JSON.stringify(colsClues);
-      const gridS = JSON.stringify(grid);
-      const queryI = `initClues(${gridS},${rowsCluesS},${colsCluesS},NewSatisfiedRowClues,NewSatisfiedColClues)`;
-       pengine.query(queryI,(success,response) => {
-       if(success){
-         console.log(response['NewSatisfiedRowClues']);
-         console.log(response['NewSatisfiedColClues']);
-       }
-     }) 
-   } 
-  } 
+      if(gameStatus){
+        const rowsCluesS = JSON.stringify(rowsClues);
+        const colsCluesS = JSON.stringify(colsClues);
+        const gridS = JSON.stringify(grid);
+        const queryI = `initClues(${gridS},${rowsCluesS},${colsCluesS},NewSatisfiedRowClues,NewSatisfiedColClues)`;
+         pengine.query(queryI,(success,response) => {
+         if(success){
+          setSatisfiedRowClues(response['NewSatisfiedRowClues']);
+          setSatisfiedColClues(response['NewSatisfiedColClues']);
+          console.log(response['NewSatisfiedRowClues']);
+          console.log(response['NewSatisfiedColClues']);
+         }
+       }) 
+     } //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameStatus]);  
   
   function handleClick(i, j) {
     // No action on click if we are waiting.
