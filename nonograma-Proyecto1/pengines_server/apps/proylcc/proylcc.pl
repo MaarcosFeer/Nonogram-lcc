@@ -6,8 +6,6 @@
 :-use_module(library(lists)).
 :-use_module(library(clpfd)).
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % replace(?X, +XIndex, +Y, +Xs, -XsY)
@@ -39,37 +37,39 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 		;
 	replace(_Cell, ColN, Content, Row, NewRow)),
 	
-	%Chequeo si se cumplen las pistas de la fila actual
 	nth0(RowN, RowsClues, ActualRowClues),
+	%Chequeo si se cumplen las pistas de la fila actual
 	satisfiedLine(ActualRowClues,NewRow,RowSat),
 
-	%Chequeo si se cumplen las pistas de la columna actual
 	transpose(NewGrid,TransposeNewGrid),
 	nth0(ColN,TransposeNewGrid,Col),
 	nth0(ColN, ColsClues, ActualColClues),
+	%Chequeo si se cumplen las pistas de la columna actual
 	satisfiedLine(ActualColClues,Col,ColSat). 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%CB: 1 sola pista, me fijo que le resto de la línea esté sin pintar
+% satisfiedLine(+Clues, +Line, -IsSatisfied).
+%IsSatisfied: 1 = TRUE, 0 = FALSE
+%CB: 1 sola pista: la chequeo y me fijo que le resto de la línea esté sin pintar
 satisfiedLine([C|[]],Line,IsSatisfied):- 
 	satisfiedClue(C,Line,IsSatisfied,RestOfLine),
 	cleanLine(RestOfLine,IsClean),
 	IsSatisfied == IsClean.
 
-%CR: mas de 1 pista
+%CR: mas de 1 pista: chequeo pista actual y paso a la siguiente
 satisfiedLine([HC|Clues],Line,IsSatisfied):-
     satisfiedClue(HC,Line,IsSatisfied,RestOfLine),
     satisfiedLine(Clues,RestOfLine,IsSatisfied).
 
+%Entra en este caso y devuelve falso si no pudo satsifacer niguno de los anteriores
 satisfiedLine(_,_,0).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%IsSatisfied: 1 = TRUE, 0 = FALSE
+% satisfiedClue(+Clue, +Line, -IsSatisfied, -RestOfLine).
 %CASOS CON PISTA 0
 %Hay alguna celda pintada y la pista es 0, devuelvo 0.
 satisfiedClue(0,[H|T],0,[H|T]):- H == "#".
-%Llegué a la última celda y no está pintada, y la pista es 0, devuelvo 1.
+%Llegué a la última celda y no está pintada, la pista es 0, devuelvo 1.
 satisfiedClue(0,[H|[]],1,[]):- H \== "#".
 %La pista es 0, la celda actual no está pintada, sigo recorriendo.
 satisfiedClue(0,[H|T],IsSatisfied,Ts):-
@@ -87,14 +87,14 @@ satisfiedClue(N,[H|T],IsSatisfied,RestOfLine):-
 	H \== "#",
 	satisfiedClue(N,T,IsSatisfied,RestOfLine).
 
-%Se encontraron exactamente N celdas pintadas consecutivas
+%Se encontraron exáctamente N celdas pintadas consecutivas
 satisfiedClue(N,Line,1,RestOfLine):-
     nConsecutive(N,Line,RestOfLine).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% nConsecutive(+RequiredCells, +Line, -RestOfLine).
 
 %CB: No se necesitan pintar mas celdas.
-%nConsecutive(Number,ActualList,RestOfList).
 nConsecutive(0,[],[]).
 nConsecutive(0,[H|T],[H|T]):- H \== "#".
 %CR 
@@ -104,7 +104,9 @@ nConsecutive(N,[H|T],Ts):-
     nConsecutive(Nr,T,Ts). 
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Devuelve 1 la línea está limpia (no tiene ninguna celda pintada), de lo contrario devuelve 0
+% cleanLine(+Line, -IsClean).
+
+%Devuelve 1 si la línea está limpia (no tiene ninguna celda pintada), de lo contrario devuelve 0
 cleanLine([],1).
 cleanLine([H|_],0):- H == "#".
 cleanLine([H|T],IsClean):-
@@ -112,43 +114,27 @@ cleanLine([H|T],IsClean):-
 	cleanLine(T,IsClean).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
-	checkWin([],[],true).
+% checkWin(+SatisfiedRowClues, +SatisfiedColClues, -IsAWin).
+%Si todas las pistas de las filas y columnas son 1 (están satisfechas) estoy en condiciones de ganar
+checkWin([],[],true).
 checkWin(SatisfiedRowClues,SatisfiedColClues,true):- 
 	forall(member(RowClue,SatisfiedRowClues), 1 is RowClue),
 	forall(member(ColClue,SatisfiedColClues), 1 is ColClue).
 checkWin(_,_,false).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%initClues(+Grid,+RowsClues, +ColsClues,-NewSatisfiedRowClues,-NewSatisfiedColClues).
+%Inicializa el chequeo de todas las pistas.
 initClues(Grid,RowsClues, ColsClues,NewSatisfiedRowClues,NewSatisfiedColClues):-
 	initCluesAux(Grid,RowsClues,NewSatisfiedRowClues),
 	transpose(Grid,TransposeGrid),
 	initCluesAux(TransposeGrid,ColsClues,NewSatisfiedColClues). 
 	
-	initCluesAux([],_,[]).
+initCluesAux([],_,[]).
 %CB 1 sola linea por recorrer
 initCluesAux([Line|[]],[ActualLineClues|[]],[IsSatisfied]):-
 	satisfiedLine(ActualLineClues,Line,IsSatisfied).
-
+%CR: más de 1 línea por recorrer
 initCluesAux([Line|RestOfLine],[ActualLineClues|RestOfClues],[IsSatisfied|RestOfSatisfied]):-
 	satisfiedLine(ActualLineClues,Line,IsSatisfied),
 	initCluesAux(RestOfLine,RestOfClues,RestOfSatisfied).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%DEADCODE 
-
-%No encontre exactamente N celdas consecutivas pintadas, me muevo a la celda vacia mas cercana
-/* satisfiedClue(N,[H|T],IsSatisfied,RestOfLine):-
-	H == "#",
-	not(nConsecutive(N,[H|T],_)),
-	moveToNextEmpty(T,Tm),
-	satisfiedClue(N,Tm,IsSatisfied,RestOfLine). */
-
-	%CB: no estoy en un '#'
-	/* moveToNextEmpty([],[]).
-	moveToNextEmpty([H|T],[H|T]):- H \== "#".
-	%CR
-	moveToNextEmpty([H|T],Ts):- 
-	H == "#",
-	moveToNextEmpty(T,Ts). */

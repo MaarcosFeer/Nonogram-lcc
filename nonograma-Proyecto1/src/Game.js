@@ -13,8 +13,8 @@ function Game() {
   const [waiting, setWaiting] = useState(false);
   const [satisfiedRowClues, setSatisfiedRowClues] = useState(null);
   const [satisfiedColClues, setSatisfiedColClues] = useState(null);
-  /*elevo el estado que controla el toggleButton para saber cuando colocar cruces y cuando pintar */
-  const [onPaintingMode, setOnPaintingMode] = useState(true);
+  /*Elevo el estado que controla el toggleButton para saber cuando colocar cruces y cuando pintar */
+  const [onCrossMode, setOnCrossMode] = useState(true);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -28,18 +28,23 @@ function Game() {
     const queryS = 'init(RowClues, ColumClues, Grid)';
     pengine.query(queryS, (success, response) => {
       if (success) {
-        setGrid(response['Grid']);
-        setRowsClues(response['RowClues']);
-        setColsClues(response['ColumClues']);
-
-        const gridS = JSON.stringify(response['Grid']);
-        const rowCluesS = JSON.stringify(response['RowClues']);
-        const colCluesS = JSON.stringify(response['ColumClues']);
+        let gridS = response['Grid'];
+        let rowCluesS = response['RowClues'];
+        let colCluesS = response['ColumClues'];
+        setGrid(gridS);
+        setRowsClues(rowCluesS);
+        setColsClues(colCluesS);
+        //Modifico las variables para poder usarlas en la siguiente query
+        gridS = JSON.stringify(response['Grid']);
+        rowCluesS = JSON.stringify(response['RowClues']);
+        colCluesS = JSON.stringify(response['ColumClues']);
+        //Inicializo las listas que chequean si las pistas están satisfechas
         const queryI = `initClues(${gridS},${rowCluesS},${colCluesS},NewSatisfiedRowClues,NewSatisfiedColClues)`;
         pengine.query(queryI, (success, response) => {
           if (success) {
             setSatisfiedRowClues(response['NewSatisfiedRowClues']);
             setSatisfiedColClues(response['NewSatisfiedColClues']);
+            //Borrar
             console.log(response['NewSatisfiedRowClues']);
             console.log(response['NewSatisfiedColClues']);
           }
@@ -48,9 +53,7 @@ function Game() {
       }
     });
   }
-
-
-
+  //Chequeo el estado del juego (si se completó el nivel o hay que seguir jugando) cada vez que hay una modificación en las pistas
   useEffect(() => {
     if (satisfiedColClues && satisfiedRowClues) {
       const satisfiedRowCluesS = JSON.stringify(satisfiedRowClues);
@@ -68,9 +71,10 @@ function Game() {
     if (waiting) {
       return;
     }
+
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
-    const content = onPaintingMode ? 'X' : '#';
+    const content = onCrossMode ? 'X' : '#';
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
     const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
@@ -97,14 +101,13 @@ function Game() {
     if (waiting) {
       return;
     }
-    setOnPaintingMode(!onPaintingMode);
+    setOnCrossMode(!onCrossMode);
   }
 
   if (!grid) {
     return null;
   }
 
-  const statusText = "Keep playing!";
   return (
     <div className="game">
       <Board
@@ -116,10 +119,6 @@ function Game() {
         satisfiedRowClues={satisfiedRowClues}
         satisfiedColClues={satisfiedColClues}
       />
-
-      <div className="game-info">
-        {statusText}
-      </div>
     </div>
   );
 }
