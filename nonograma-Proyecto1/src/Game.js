@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
+import ToggleButton from './ToggleButton';
 
 let pengine;
 
@@ -34,6 +35,8 @@ function Game() {
         setGrid(gridS);
         setRowsClues(rowCluesS);
         setColsClues(colCluesS);
+        setSatisfiedRowClues(Array(rowCluesS.length).fill(0));
+        setSatisfiedColClues(Array(colCluesS.length).fill(0));
         //Modifico las variables para poder usarlas en la siguiente query
         gridS = JSON.stringify(response['Grid']);
         rowCluesS = JSON.stringify(response['RowClues']);
@@ -97,7 +100,7 @@ function Game() {
     setSatisfiedColClues(newSatisfiedColClues);
   }
 
-  function handleClickToggleButton() {
+  function onClickToggleButton() {
     if (waiting) {
       return;
     }
@@ -115,10 +118,10 @@ function Game() {
         rowsClues={rowsClues}
         colsClues={colsClues}
         onClick={(i, j) => handleClick(i, j)}
-        onClickToggleButton={() => handleClickToggleButton()}
         satisfiedRowClues={satisfiedRowClues}
         satisfiedColClues={satisfiedColClues}
-      />
+       />
+       <ToggleButton onClickToggleButton={() => onClickToggleButton()}/>
     </div>
   );
 }

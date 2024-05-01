@@ -129,7 +129,8 @@ initClues(Grid,RowsClues, ColsClues,NewSatisfiedRowClues,NewSatisfiedColClues):-
 	initCluesAux(Grid,RowsClues,NewSatisfiedRowClues),
 	transpose(Grid,TransposeGrid),
 	initCluesAux(TransposeGrid,ColsClues,NewSatisfiedColClues). 
-	
+
+%initCluesAux(+Grid,+LineClues,-NewSatisfiedLineClues).	
 initCluesAux([],_,[]).
 %CB 1 sola linea por recorrer
 initCluesAux([Line|[]],[ActualLineClues|[]],[IsSatisfied]):-
