@@ -66,17 +66,6 @@ satisfiedLine(_,_,0).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % satisfiedClue(+Clue, +Line, -IsSatisfied, -RestOfLine).
-%CASOS CON PISTA 0
-%Hay alguna celda pintada y la pista es 0, devuelvo 0.
-satisfiedClue(0,[H|T],0,[H|T]):- H == "#".
-%Llegué a la última celda y no está pintada, la pista es 0, devuelvo 1.
-satisfiedClue(0,[H|[]],1,[]):- H \== "#".
-%La pista es 0, la celda actual no está pintada, sigo recorriendo.
-satisfiedClue(0,[H|T],IsSatisfied,Ts):-
-	H \== "#",
-	satisfiedClue(0,T,IsSatisfied,Ts).
-
-%CASOS CON PISTA N > 0
 %La cantidad de celdas que faltan pintar es mayor a lo que queda por recorrer de la lista
 satisfiedClue(N,Line,0,Line):-
     length(Line, Length),

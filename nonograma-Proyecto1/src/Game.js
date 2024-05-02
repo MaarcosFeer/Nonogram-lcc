@@ -65,6 +65,8 @@ function Game() {
       pengine.query(queryWinS, (success, response) => {
         if (success)
           console.log(response['IsAWin']);
+        console.log(satisfiedColClues);
+        console.log(satisfiedRowClues);
       })
     }
   }, [satisfiedColClues, satisfiedRowClues]);
