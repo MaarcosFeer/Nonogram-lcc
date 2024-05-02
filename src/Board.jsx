@@ -1,10 +1,11 @@
 import React from 'react';
 import Square from './Square';
 import Clue from './Clue';
-
-function Board({ grid, rowsClues, colsClues, onClick}) {
+function Board({ grid, rowsClues, colsClues, onClick,satisfiedColClues,satisfiedRowClues}) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
+    let clueStyle = "clue";
+    
     return (
         <div className="vertical">
             <div
@@ -23,7 +24,12 @@ function Board({ grid, rowsClues, colsClues, onClick}) {
             >
                 <div>{/* top-left corner square */}</div>
                 {colsClues.map((clue, i) =>
-                    <Clue clue={clue} key={i} />
+                {
+                    clueStyle = satisfiedColClues[i] === 1 ? 'satisfiedClue': '';
+                    return(
+                        <Clue clue={clue} key={i} clueStyle={clueStyle}/>
+                    );
+                }
                 )}
             </div>
             <div className="horizontal">
@@ -36,7 +42,12 @@ function Board({ grid, rowsClues, colsClues, onClick}) {
                     }}
                 >
                     {rowsClues.map((clue, i) =>
-                        <Clue clue={clue} key={i} />
+                    {
+                        clueStyle = satisfiedRowClues[i] === 1 ? 'satisfiedClue': '';
+                        return(
+                            <Clue clue={clue} key={i} clueStyle={clueStyle}/>
+                        );
+                    }
                     )}
                 </div>
                 <div className="board"
@@ -53,6 +64,7 @@ function Board({ grid, rowsClues, colsClues, onClick}) {
                             />
                         )
                     )}
+                
                 </div>  
             </div>
             

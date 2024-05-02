@@ -7,7 +7,7 @@ function Square({ value, onClick }) {
     }
     return (
         <button className={`square ${cube}`} onClick={onClick}>
-            {value !== '_' ? value : null}
+            {value === 'X' ? value : ''}
         </button>
         
     );

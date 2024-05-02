@@ -1,14 +1,40 @@
+:root{
+  --i:0;
+}
 * {
   box-sizing: border-box;
 }
 
 body {
-  background: #99582A;
+  background: #489FB5;
   font-family: sans-serif;
   margin: 20px;
   padding: 0;
+  overflow: hidden;
 }
-
+.winner {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 10;
+}
+.winner .text {
+  background: #111;
+  height: 300px;
+  width: 320px;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
 .square {
   background: #fff;
   border: 1px solid #999;
@@ -22,16 +48,17 @@ body {
 
 .board {
   display: grid;
-  outline: darkgoldenrod solid 2px;
+  outline: #489FB5 solid 2px;
   box-shadow: 2px 2px 5px #CCC;
 }
 .squareSelect{
-  background: #000;
+  transform-origin: center;
+  transition: background-color 0.4s ease;
+  background-color: #000;
 }
 .horizontal {
   display: flex;
 }
-
 .vertical {
   display: flex;
   flex-direction: column;
@@ -49,11 +76,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #FFE6A7;
+  background: #9984D4;
   border-radius: 8px;
   margin: 5px;
 }
 
+.clue.satisfiedClue{
+  background: #A9FBD7;
+}
 .clue div {
   margin: 2px
 }
@@ -66,6 +96,8 @@ body {
   position: relative;
   display: flex;
   box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
   width: 80px;
   height: 34px;
 }
@@ -79,15 +111,12 @@ height: 0;
 .slider {
   position: absolute;
   cursor: pointer;
-
-  
-
   top:  0;
   left: 0;
   right: 0;
   bottom: 0;
   border-radius: 10px 10px;
-  background-color: #FFE6A7;
+  background-color: #9984D4;
 }
 
 .slider:before {
@@ -95,14 +124,14 @@ height: 0;
   content: "\2716";
   height: 35px;
   width: 35px;
-  background-color: #99582A;
+  background-color: #489FB5;
   border-radius: 100% 100%;
   text-align: center; /* Centramos horizontalmente */
   line-height:225% /* Centramos verticalmente */
 }
 
 .slider:hover {
-  background-color: #FFF3D6;
+  background-color: #9984D4;
   transition: .3s ease background-color;
 }
 
@@ -116,12 +145,74 @@ input:checked + .slider:before {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
   gap: 20px
 }
-
-.game-info {
-  margin-left: 20px;
+section{
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+section .scroll{
+  width: 100%;
+  display: flex;
+}
+section .scroll div{
+  color: #000;
+  font-size: 4em;
+  background: #fff;
+  white-space: nowrap;
+  font-weight: 900;
+  text-transform: uppercase;
+  animation: animate 14s linear infinite;
+}
+.container{
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container .box{
+  transform-style: preserve-3d;
+  animation: win-animation 7s linear infinite;
+}
+@keyframes win-animation{
+  0%{
+   transform: perspective(1000px) rotateX(0deg) rotate(0deg);
+  } 
+  100%{
+   transform: perspective(1000px) rotateX(360deg) rotate(0deg);
+  } 
+ }
+.container .box span{
+  position: absolute;
+  color: #fff;
+  font-size: 3.5em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  font-weight: 900;
+  padding: 0 10px;
+  transform-style: preserve-3d;
+  text-shadow: 0 5px 15px rgba(0.0.0.0.25);
+  transform: translate(-50%,-50%) rotateX(calc(var(--i) * 22.5deg)) translateZ(100px);
+}
+.container .box span i:nth-child(1){
+  font-style: initial;
+  color: #ff246f;
+}
+.container .box span i:nth-child(2){
+  font-style: initial;
+  color: #12b5ff;
+}
+@keyframes animate{
+  0%{
+    transform: translate(100%);
+  }
+  100%{
+    transform: translate(100%);
+  }
 }
