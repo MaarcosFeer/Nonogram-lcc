@@ -50,11 +50,9 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % satisfiedLine(+Clues, +Line, -IsSatisfied).
 %IsSatisfied: 1 = TRUE, 0 = FALSE
-%CB: 1 sola pista: la chequeo y me fijo que le resto de la línea esté sin pintar
-satisfiedLine([C|[]],Line,IsSatisfied):- 
-	satisfiedClue(C,Line,IsSatisfied,RestOfLine),
-	cleanLine(RestOfLine,IsClean),
-	IsSatisfied == IsClean.
+%CB: Sin pistas(Mismo efecto que pista 0)
+satisfiedLine([],Line,IsSatisfied):-
+	cleanLine(Line,IsSatisfied).
 
 %CR: mas de 1 pista: chequeo pista actual y paso a la siguiente
 satisfiedLine([HC|Clues],Line,IsSatisfied):-
@@ -66,6 +64,8 @@ satisfiedLine(_,_,0).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % satisfiedClue(+Clue, +Line, -IsSatisfied, -RestOfLine).
+%Caso pista 0
+satisfiedClue(0,Line,1,Line).
 %La cantidad de celdas que faltan pintar es mayor a lo que queda por recorrer de la lista
 satisfiedClue(N,Line,0,Line):-
     length(Line, Length),

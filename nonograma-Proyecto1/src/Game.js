@@ -48,8 +48,8 @@ function Game() {
             setSatisfiedRowClues(response['NewSatisfiedRowClues']);
             setSatisfiedColClues(response['NewSatisfiedColClues']);
             //Borrar
-            console.log(response['NewSatisfiedRowClues']);
-            console.log(response['NewSatisfiedColClues']);
+            console.log("Row "+response['NewSatisfiedRowClues']);
+            console.log("Col "+response['NewSatisfiedColClues']);
           }
         })
 
@@ -65,8 +65,8 @@ function Game() {
       pengine.query(queryWinS, (success, response) => {
         if (success)
           console.log(response['IsAWin']);
-        console.log(satisfiedColClues);
-        console.log(satisfiedRowClues);
+        console.log("Row "+satisfiedRowClues);
+        console.log("Col "+satisfiedColClues);
       })
     }
   }, [satisfiedColClues, satisfiedRowClues]);
