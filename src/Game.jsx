@@ -20,6 +20,12 @@ function Game({gameOn}) {
   
   /*Elevo el estado que controla el toggleButton para saber cuando colocar cruces y cuando pintar */
   const [onCrossMode, setOnCrossMode] = useState(true);
+   //Estado de la lamparita para saber cuando está activa
+   const [onRevealMode,setOnRevealMode] = useState(false);
+   //Estado del botón que muestra el tablero resuelto
+   const [showingSolvedGrid, setShowingSolvedGrid] = useState(false);
+   //Almacena el tablero oculto
+   const [hiddenGrid, setHiddenGrid] = useState(null);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -51,6 +57,13 @@ function Game({gameOn}) {
           if (success) {
             setSatisfiedRowClues(response['NewSatisfiedRowClues']);
             setSatisfiedColClues(response['NewSatisfiedColClues']);
+          }
+        })
+
+        const querySG = `solveGame(${rowCluesS},${colCluesS},${gridS},SolvedGrid)`;
+        pengine.query(querySG, (success, response) => {
+          if (success) {
+            setHiddenGrid(response['SolvedGrid']);
           }
         })
 
