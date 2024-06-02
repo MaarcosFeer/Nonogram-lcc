@@ -1,8 +1,8 @@
 import React from "react";
-function ClueButton(){
+function ClueGridButton(){
     return
     (
         
     );
 }
-export default ClueButton;
+export default ClueGridButton;
