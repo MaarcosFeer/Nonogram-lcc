@@ -5,7 +5,7 @@
 
 :-use_module(library(lists)).
 :-use_module(library(clpfd)).
-:-dynamic(trySolveGrid/1).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % replace(?X, +XIndex, +Y, +Xs, -XsY)
@@ -124,98 +124,3 @@ initCluesAux([Line|[]], [ActualLineClues|[]], [IsSatisfied]):-
 initCluesAux([Line|RestOfLine], [ActualLineClues|RestOfClues], [IsSatisfied|RestOfSatisfied]):-
 	satisfiedLine(ActualLineClues, Line, IsSatisfied), 
 	initCluesAux(RestOfLine, RestOfClues, RestOfSatisfied).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-solveGame(RowClues,ColClues,Grid,SolvedGrid):-
-transpose(Grid,TransposeGrid),
-paintInitialCols(ColClues,TransposeGrid,NewTransposeGrid),
-transpose(NewTransposeGrid,NewGrid),
-trySolveGrid(RowClues,ColClues,NewGrid,SolvedGrid).
-
-trySolveGrid(RowClues,ColClues,Grid,SolvedGrid):-
-trySolveRows(RowClues,Grid,SolvedGrid),
-transpose(SolvedGrid,TSolvedGrid),
-checkCols(ColClues,TSolvedGrid).
-
-%trySolveRows(RowClues,Grid,sSolvedGrid)
-trySolveRows([C|_],[R|_],[S]):-
-solveLine(C,R,S).
-
-
-trySolveRows([C|Cs],[R|Rs],[S|Ss]):-
-solveLine(C,R,S),
-trySolveRows(Cs,Rs,Ss).
-
-%checkCols(Clues,Grid)
-checkCols([C|[]],[L|[]]):-
-satisfiedLine(C,L,IsSatisfied),
-IsSatisfied == 1.
-
-checkCols([C|Cs],[L|Ls]):-
-satisfiedLine(C,L,IsSatisfied),
-IsSatisfied == 1,
-checkCols(Cs,Ls).
-
-%Pinto las columnas que tienen una Ãºnica posible solucion.
-%paintInitialCols(ColClues,Grid,NewGrid)
-paintInitialCols([],[],[]).
-
-paintInitialCols([C|Cs],[L|Ls],[SolvedL|Ns]):-
-length(L,Length),
-oneSolve(C,Length),
-solveLine(C,L,SolvedL),
-paintInitialCols(Cs,Ls,Ns),!.
-
-paintInitialCols([_|Cs],[L|Ls],[L|Ns]):-
-paintInitialCols(Cs,Ls,Ns).
-
-%solveLine(Clues,Line,NewLine)
-solveLine([],Line,Line):-
-cleanLine(Line,IsClean),
-IsClean == 1.
-
-solveLine([C|Cs],Line,NewLine):-
-trySolveClue(C,0,Line,RestOfLine,L),
-solveLine(Cs,RestOfLine,Ls),
-append(L,Ls,NewLine).
-
-%trySolveClue(+C,+Gap,+Line,-RestOfLine,-NewLine)
-trySolveClue(C,Gap,Line,RestOfLine,NewLine):-
-solveClue(C,Gap,Line,RestOfLine,NewLine).
-
-trySolveClue(C,Gap,Line,RestOfLine,NewLine):-
-NewGap is Gap+1,
-length(Line,Length),
-N is NewGap+C,
-N =< Length,
-trySolveClue(C,NewGap,Line,RestOfLine,NewLine).
-
-%solveClue(+C,+Gap,+Line,-RestOfLine,-NewLine)
-solveClue(C,0,Line,RestOfLine,NewLine):-
-paintClue(C,Line,RestOfLine,NewLine).
-
-solveClue(C,Gap,[H|T],RestOfLine,[H|L]):-
-H \== "#",
-Gr is Gap-1,
-solveClue(C,Gr,T,RestOfLine,L).
-
-%paintClue(Clue,Line,RestOfLine,NewLine).
-paintClue(0,[],[],[]).
-
-paintClue(0,[H|T],T,[H]):- H \== "#".
-
-paintClue(Clue,[H|T],RestOfLine,["#"|L]):-
-Clue > 0,
-H \== "X",
-RC is Clue -1,
-paintClue(RC,T,RestOfLine,L).
-
-oneSolve([],_).
-oneSolve(Clues,LineLength):-
-getSum(Clues,Sum),
-LineLength is Sum-1.
-
-getSum([C|[]],S):- S is C+1.
-
-getSum([C|Cs],Sum):-
-getSum(Cs,R),
-Sum is C+1+R.

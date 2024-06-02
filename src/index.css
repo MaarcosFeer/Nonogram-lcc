@@ -6,7 +6,7 @@
 }
 
 body {
-  background: #489FB5;
+  background: #49676E;
   font-family: sans-serif;
   margin: 20px;
   padding: 0;
@@ -21,9 +21,25 @@ body {
   display: grid;
   place-items: center;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: 10;
+  z-index: 10; 
 }
-.winner .text {
+.winner.in{
+  animation: charge-modal-in 0.7s ease;
+}
+@keyframes charge-modal-in {
+    from{
+      transform: scale(0);
+    }
+}
+.winner.out{
+  animation: charge-modal-out 0.7s ease;
+}
+@keyframes charge-modal-out {
+    to{
+      transform: scale(0);
+    }
+}
+.winner.text {
   background: #111;
   height: 300px;
   width: 320px;
@@ -35,6 +51,23 @@ body {
   align-items: center;
   gap: 20px;
 }
+.winner button {
+  padding: 8px 12px;
+  margin: 25px;
+  background: transparent;
+  border: 2px solid #eee;
+  color: #eee;
+  width: 100px;
+  border-radius: 5px;
+  transition: 0.2s;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.winner button:hover {
+  background: #eee;
+  color: #222;
+}
 .square {
   background: #fff;
   border: 1px solid #999;
@@ -45,10 +78,33 @@ body {
   padding: 0;
   text-align: center;
 }
+.first-page{
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.first-page button {
+  padding: 8px 12px;
+  margin: 25px;
+  background: transparent;
+  border: 2px solid #eee;
+  color: #eee;
+  width: 100px;
+  border-radius: 5px;
+  transition: 0.2s;
+  font-weight: bold;
+  cursor: pointer;
+}
 
+.first-page button:hover {
+  background: #eee;
+  color: #222;
+}
 .board {
   display: grid;
-  outline: #489FB5 solid 2px;
+  outline: #0D324D 2px; box-shadow: 2px 2px 5px #0D324D;
   box-shadow: 2px 2px 5px #CCC;
 }
 .squareSelect{
@@ -73,16 +129,23 @@ body {
 }
 
 .clue {
+  height: px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #9984D4;
+  background:#0D324D;
   border-radius: 8px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #F7F0F0;
   margin: 5px;
+  color: #F7F0F0;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
 }
-
 .clue.satisfiedClue{
-  background: #A9FBD7;
+  background:#F7F0F0;
+  border-color:#bfbcc0;
+  color:#bfbcc0;
 }
 .clue div {
   margin: 2px
@@ -98,7 +161,7 @@ body {
   box-sizing: border-box;
   justify-content: center;
   align-items: center;
-  width: 80px;
+  width: 68px;
   height: 34px;
 }
 
@@ -107,7 +170,6 @@ opacity: 0;
 width: 0;
 height: 0;
 }
-
 .slider {
   position: absolute;
   cursor: pointer;
@@ -116,27 +178,38 @@ height: 0;
   right: 0;
   bottom: 0;
   border-radius: 10px 10px;
-  background-color: #9984D4;
+  border-style: solid ;
+  border-color: #F7F0F0;
+  background-color: #bfbcc0;
+
 }
 
 .slider:before {
   position: absolute;
   content: "\2716";
-  height: 35px;
-  width: 35px;
-  background-color: #489FB5;
+  height: 38px;
+  width: 38px;
+  top: 50%;
+  right: 50%;
+  transform: translateY(-50%);
+
+  background-color: #F7F0F0;
   border-radius: 100% 100%;
+  border-style: solid;
+  border-width: 2px;
+  border-color: transparent;
   text-align: center; /* Centramos horizontalmente */
-  line-height:225% /* Centramos verticalmente */
+  line-height:250%;  /*Centramos verticalmente */
 }
 
 .slider:hover {
-  background-color: #9984D4;
+  background-color: #0D324D;
+  border-color:#F7F0F0;
   transition: .3s ease background-color;
 }
 
 input:checked + .slider:before {
-  transform: translateX(44px);
+  transform: translateX(40px) translateY(-50%);
   content: "\2B1B";
 }
 
@@ -161,6 +234,7 @@ section .scroll{
   width: 100%;
   display: flex;
 }
+
 section .scroll div{
   color: #000;
   font-size: 4em;
@@ -171,6 +245,8 @@ section .scroll div{
   animation: animate 14s linear infinite;
 }
 .container{
+  width: 100%;
+  height: 200px;
   position: relative;
   display: flex;
   justify-content: center;

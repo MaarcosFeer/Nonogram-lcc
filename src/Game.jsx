@@ -6,7 +6,7 @@ import WinnerModal from './WinnerModal';
 let pengine;
 
 
-function Game() {
+function Game({gameOn}) {
 
   // State
   const [grid, setGrid] = useState(null);
@@ -32,7 +32,7 @@ function Game() {
     pengine = instance;
     const queryS = 'init(RowClues, ColumClues, Grid)';
     pengine.query(queryS, (success, response) => {
-      if (success) {
+      if (success ) {
         let gridS = response['Grid'];
         let rowCluesS = response['RowClues'];
         let colCluesS = response['ColumClues'];
@@ -51,9 +51,6 @@ function Game() {
           if (success) {
             setSatisfiedRowClues(response['NewSatisfiedRowClues']);
             setSatisfiedColClues(response['NewSatisfiedColClues']);
-            //Borrar
-            console.log(response['NewSatisfiedRowClues']);
-            console.log(response['NewSatisfiedColClues']);
           }
         })
 
@@ -129,6 +126,7 @@ function Game() {
   return (
     <div className="game">
       {isWin && <div className='container'>
+
                   <div className='box'>
                     <span style={{'--i':1}}><i>WON</i> WON <i>WON</i> </span>
                     <span style={{'--i':2}}><i>WON</i> WON <i>WON</i> </span>
@@ -149,7 +147,7 @@ function Game() {
                   </div>
                 </div>
       }
-      {(animationSucessfully )&&  <WinnerModal resetGame={resetGame}/>}
+      {animationSucessfully &&  <WinnerModal resetGame={resetGame}/>}
       <Board
         grid={grid}
         rowsClues={rowsClues}
