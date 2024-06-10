@@ -68,6 +68,7 @@ body {
   background: #eee;
   color: #222;
 }
+
 .square {
   background: #fff;
   border: 1px solid #999;
@@ -154,7 +155,44 @@ body {
 .colClues .clue {
   flex-direction: column;
 }
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 68px;
+  height: 34px;
+  gap: 35px;
+}
 
+.buttons .clueGridButton{
+  position: relative;
+  top:  0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 10px 10px;
+  border-style: solid ;
+  border-color: #F7F0F0;
+  background-color: #bfbcc0;
+}
+.clueGridButton.active{
+  background-color: #0D324D;
+}
+.buttons .clueSquareButton{
+  position: relative;
+  cursor: pointer;
+  top:  0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 10px 10px;
+  border-style: solid ;
+  border-color: #F7F0F0;
+  background-color: #bfbcc0;
+}
+.clueSquareButton.active{
+  background-color: #0D324D;
+}
 .toggleButton {
   position: relative;
   display: flex;

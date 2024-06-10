@@ -2,10 +2,9 @@
 	[  
 		put/8
 	]).
-
+:-dynamic(trySolveGrid/1).
 :-use_module(library(lists)).
 :-use_module(library(clpfd)).
-:-dynamic(trySolveGrid/1).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % replace(?X, +XIndex, +Y, +Xs, -XsY)
@@ -140,7 +139,6 @@ checkCols(ColClues,TSolvedGrid).
 trySolveRows([C|_],[R|_],[S]):-
 solveLine(C,R,S).
 
-
 trySolveRows([C|Cs],[R|Rs],[S|Ss]):-
 solveLine(C,R,S),
 trySolveRows(Cs,Rs,Ss).
@@ -155,7 +153,7 @@ satisfiedLine(C,L,IsSatisfied),
 IsSatisfied == 1,
 checkCols(Cs,Ls).
 
-%Pinto las columnas que tienen una Ãºnica posible solucion.
+%Pinto las columnas que tienen una unica posible solucion.
 %paintInitialCols(ColClues,Grid,NewGrid)
 paintInitialCols([],[],[]).
 
@@ -169,9 +167,8 @@ paintInitialCols([_|Cs],[L|Ls],[L|Ns]):-
 paintInitialCols(Cs,Ls,Ns).
 
 %solveLine(Clues,Line,NewLine)
-solveLine([],Line,Line):-
-cleanLine(Line,IsClean),
-IsClean == 1.
+solveLine([],Line,NewLine):-
+fillWithCross(Line,NewLine).
 
 solveLine([C|Cs],Line,NewLine):-
 trySolveClue(C,0,Line,RestOfLine,L),
@@ -193,7 +190,7 @@ trySolveClue(C,NewGap,Line,RestOfLine,NewLine).
 solveClue(C,0,Line,RestOfLine,NewLine):-
 paintClue(C,Line,RestOfLine,NewLine).
 
-solveClue(C,Gap,[H|T],RestOfLine,[H|L]):-
+solveClue(C,Gap,[H|T],RestOfLine,["X"|L]):-
 H \== "#",
 Gr is Gap-1,
 solveClue(C,Gr,T,RestOfLine,L).
@@ -201,7 +198,7 @@ solveClue(C,Gr,T,RestOfLine,L).
 %paintClue(Clue,Line,RestOfLine,NewLine).
 paintClue(0,[],[],[]).
 
-paintClue(0,[H|T],T,[H]):- H \== "#".
+paintClue(0,[H|T],T,["X"]):- H \== "#".
 
 paintClue(Clue,[H|T],RestOfLine,["#"|L]):-
 Clue > 0,
@@ -219,3 +216,9 @@ getSum([C|[]],S):- S is C+1.
 getSum([C|Cs],Sum):-
 getSum(Cs,R),
 Sum is C+1+R.
+
+%fillWithCross(Line,NewLine)
+fillWithCross([],[]).
+fillWithCross([H|T],["X"|Ns]):-
+	H \== "#",
+	fillWithCross(T,Ns).
