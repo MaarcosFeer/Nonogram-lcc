@@ -3,7 +3,10 @@ import PengineClient from './PengineClient';
 import Board from './Board';
 import ToggleButton from './ToggleButton';
 import WinnerModal from './WinnerModal';
+import Lottie from 'lottie-react';
+import loadingAnimation from './animations/loadingAnimation.json';
 let pengine;
+
 
 
 function Game({gameOn}) {
@@ -24,6 +27,7 @@ function Game({gameOn}) {
   const [onCrossMode, setOnCrossMode] = useState(true);
    //Estado de la lamparita para saber cuando está activa
    const [onRevealMode,setOnRevealMode] = useState(false);
+   //Estado del botón de resetear el juego
    //Estado del botón que muestra el tablero resuelto
    const [showingSolvedGrid, setShowingSolvedGrid] = useState(false);
    //Almacena el tablero oculto
@@ -229,7 +233,21 @@ function Game({gameOn}) {
               <path d="M21 21L16.65 16.65M11 6C13.7614 6 16 8.23858 16 11M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
+            <button className="resetButton" onClick={()=>resetGame()}>
+            <svg width="68px" height="30px" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" transform="translate(2 2)"><path d="m12.5 1.5c2.4138473 1.37729434 4 4.02194088 4 7 0 4.418278-3.581722 8-8 8s-8-3.581722-8-8 3.581722-8 8-8"/><path d="m12.5 5.5v-4h4"/></g></svg>
+            </button>
       </div> 
+      {hiddenGrid === null && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}> {/* Centrar la animación y el texto */}
+          <Lottie 
+            animationData={loadingAnimation} // La animación se carga desde el JSON
+            loop={true} // La animación se reproducirá en bucle
+            autoplay={true} // La animación se reproducirá automáticamente
+            style={{ width: 50, height: 50 }} // Estilo para ajustar el tamaño de la animación
+          />
+          <p>Generating Solution</p>
+        </div>
+      )}
       </div>
   );
 }

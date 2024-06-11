@@ -163,7 +163,17 @@ body {
   height: 34px;
   gap: 35px;
 }
-
+.buttons .resetButton{
+  position: relative;
+  top:  0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 10px 10px;
+  border-style: solid ;
+  border-color: #F7F0F0;
+  background-color: #bfbcc0;
+}
 .buttons .clueGridButton{
   position: relative;
   top:  0;
